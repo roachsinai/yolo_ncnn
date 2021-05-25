@@ -406,7 +406,7 @@ static int detect_yolov5(const cv::Mat& bgr, std::vector<Object>& objects)
     return 0;
 }
 
-static void draw_objects(const cv::Mat& bgr, const std::vector<Object>& objects)
+static void draw_objects(const cv::Mat& bgr, const std::vector<Object>& objects, cv::Mat& image)
 {
     static const char* class_names[] = {
         "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light",
@@ -419,8 +419,6 @@ static void draw_objects(const cv::Mat& bgr, const std::vector<Object>& objects)
         "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear",
         "hair drier", "toothbrush"
     };
-
-    cv::Mat image = bgr.clone();
 
     for (size_t i = 0; i < objects.size(); i++)
     {
@@ -450,9 +448,6 @@ static void draw_objects(const cv::Mat& bgr, const std::vector<Object>& objects)
         cv::putText(image, text, cv::Point(x, y + label_size.height),
                     cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
     }
-
-    cv::imshow("image", image);
-    cv::waitKey(0);
 }
 
 // https://stackoverflow.com/a/7730134/6074780
@@ -475,18 +470,24 @@ int main(int argc, char** argv)
         capture >> frame;
         cv::Mat m = frame;
         std::vector<Object> objects;
+
         double start = GetTickCount();
         detect_yolov5(frame, objects);
         double end = GetTickCount();
+
         fprintf(stderr, "cost time:  %.5f ms \n", (end - start));
 
+        cv::Mat image = m.clone();
         // remember, imshow() needs a window name for its first parameter
         // imshow("外接摄像头", m);
-        draw_objects(m, objects);
+        draw_objects(m, objects, image);
 
-        if (cv::waitKey(30) >= 0)
+        cv::imshow("image", image);
+        if (cv::waitKey(30) == 27)
             break;
     }
+    cv::destroyAllWindows();
+    capture.release();
 
     return 0;
 }

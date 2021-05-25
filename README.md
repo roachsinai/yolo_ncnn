@@ -20,10 +20,16 @@ cmake . -Bbuild
 make -C build
 ```
 
+### for youcompleteme.vim
+
+```
+ln -fs build/compile_commands.json .
+```
+
 ## run
 
 ```
-./build/yolo img/1.jpg
+./build/yolo
 ```
 
 ## refs

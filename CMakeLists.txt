@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 project(yolo_ncnn)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 find_package(Vulkan REQUIRED)
 find_package(OpenCV REQUIRED core highgui imgproc)
 find_package(ncnn REQUIRED)
-
 
 FIND_PACKAGE(OpenMP REQUIRED)
 if(OPENMP_FOUND)
