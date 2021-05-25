@@ -1,4 +1,4 @@
-## Steps
+## Steps for ArchLinux
 
 ### dependences
 
