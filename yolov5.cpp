@@ -20,6 +20,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <stdio.h>
 #include <vector>
+#include <time.h>
 
 class YoloV5Focus : public ncnn::Layer
 {
@@ -454,27 +455,38 @@ static void draw_objects(const cv::Mat& bgr, const std::vector<Object>& objects)
     cv::waitKey(0);
 }
 
+// https://stackoverflow.com/a/7730134/6074780
+double GetTickCount(void)
+{
+  struct timespec now;
+  if (clock_gettime(CLOCK_MONOTONIC, &now))
+    return 0;
+  return now.tv_sec * 1000.0 + now.tv_nsec / 1000000.0;
+}
+
 int main(int argc, char** argv)
 {
-    if (argc != 2)
+    cv::VideoCapture capture;
+    capture.open(0);  //修改这个参数可以选择打开想要用的摄像头
+
+    cv::Mat frame;
+    while (true)
     {
-        fprintf(stderr, "Usage: %s [imagepath]\n", argv[0]);
-        return -1;
+        capture >> frame;
+        cv::Mat m = frame;
+        std::vector<Object> objects;
+        double start = GetTickCount();
+        detect_yolov5(frame, objects);
+        double end = GetTickCount();
+        fprintf(stderr, "cost time:  %.5f ms \n", (end - start));
+
+        // remember, imshow() needs a window name for its first parameter
+        // imshow("外接摄像头", m);
+        draw_objects(m, objects);
+
+        if (cv::waitKey(30) >= 0)
+            break;
     }
-
-    const char* imagepath = argv[1];
-
-    cv::Mat m = cv::imread(imagepath, 1);
-    if (m.empty())
-    {
-        fprintf(stderr, "cv::imread %s failed\n", imagepath);
-        return -1;
-    }
-
-    std::vector<Object> objects;
-    detect_yolov5(m, objects);
-
-    draw_objects(m, objects);
 
     return 0;
 }
