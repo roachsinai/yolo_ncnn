@@ -1,5 +1,11 @@
 ## Steps
 
+### dependences
+
+```
+yay -S ncnn glslang-git vulkan-headers opencv protobuf
+```
+
 ### cmake
 
 ```
