@@ -451,6 +451,7 @@ static void draw_objects(const cv::Mat& bgr, const std::vector<Object>& objects)
     }
 
     cv::imshow("image", image);
+    cv::waitKey(0);
 }
 
 int main(int argc, char** argv)
